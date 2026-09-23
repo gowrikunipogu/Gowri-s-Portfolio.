@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management System | MVC</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background:#2c3e50;">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <i class="bi bi-mortarboard-fill"></i> Student Management System
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="#register"><i class="bi bi-person-plus"></i> Register</a></li>
+        <li class="nav-item"><a class="nav-link" href="#studentList"><i class="bi bi-list-ul"></i> Student List</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-4">
+
+  <!-- Registration Form -->
+  <div class="card mb-4" id="register">
+    <div class="card-header"><i class="bi bi-person-plus"></i> Student Registration</div>
+    <div class="card-body">
+      <form th:action="@{/students}" th:object="${student}" method="post" class="row g-3" id="studentForm" novalidate>
+
+        <div class="col-md-6">
+          <label class="form-label required">Full Name</label>
+          <input type="text" class="form-control" th:field="*{fullName}" placeholder="e.g. Priya Sharma">
+          <div class="text-danger small" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label required">Email</label>
+          <input type="email" class="form-control" th:field="*{email}" placeholder="student@example.com">
+          <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label required">Mobile Number</label>
+          <input type="tel" class="form-control" th:field="*{mobile}" placeholder="10-digit number">
+          <div class="text-danger small" th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label required">Parent's Mobile Number</label>
+          <input type="tel" class="form-control" th:field="*{parentMobile}" placeholder="10-digit number">
+          <div class="text-danger small" th:if="${#fields.hasErrors('parentMobile')}" th:errors="*{parentMobile}"></div>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label required">Course</label>
+          <select class="form-select" th:field="*{course}">
+            <option value="" disabled selected>Select course</option>
+            <option>B.Tech - CSE</option>
+            <option>B.Tech - ECE</option>
+            <option>BCA</option>
+            <option>MCA</option>
+            <option>MBA</option>
+          </select>
+          <div class="text-danger small" th:if="${#fields.hasErrors('course')}" th:errors="*{course}"></div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label required">Address</label>
+          <textarea class="form-control" th:field="*{address}" rows="2" placeholder="Full residential address"></textarea>
+          <div class="text-danger small" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end">
+          <button type="reset" class="btn btn-outline-secondary me-2"><i class="bi bi-x-circle"></i> Clear</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Register Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student List Table -->
+  <div class="card" id="studentList">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-list-ul"></i> Registered Students</span>
+      <span class="badge bg-light text-dark" th:text="${#lists.size(students)} + ' students'">0 students</span>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Mobile</th>
+              <th>Parent's Mobile</th>
+              <th>Course</th>
+              <th>Address</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="s, iter : ${students}">
+              <td th:text="${iter.count}">1</td>
+              <td th:text="${s.fullName}">Name</td>
+              <td th:text="${s.email}">Email</td>
+              <td th:text="${s.mobile}">Mobile</td>
+              <td th:text="${s.parentMobile}">Parent Mobile</td>
+              <td th:text="${s.course}">Course</td>
+              <td th:text="${s.address}">Address</td>
+              <td class="text-center">
+                <form th:action="@{/students/delete/{id}(id=${s.id})}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-muted text-center mt-3 mb-0" th:if="${#lists.isEmpty(students)}">No students registered yet.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>Spring MVC app — Model (Student) &rarr; Controller (StudentController) &rarr; View (this Thymeleaf template)</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/validation.js}"></script>
+
+</body>
+</html>
